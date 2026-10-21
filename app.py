@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from langchain_groq import ChatGroq  # Changed to Groq
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
@@ -18,12 +18,12 @@ st.subheader("Automated Log Analysis & Infrastructure Remediation")
 st.markdown("---")
 
 # 3. Setup AI Model (Reads your API Key from Streamlit Secrets)
-groq_api_key = os.environ.get("GROQ_API_KEY")  # Changed to GROQ_API_KEY
+openai_api_key = os.environ.get("OPENAI_API_KEY")
 
-if not groq_api_key:
-    st.sidebar.warning("⚠️ Please configure your GROQ_API_KEY in Streamlit Secrets.")
+if not openai_api_key:
+    st.sidebar.warning("⚠️ Please configure your OPENAI_API_KEY in Streamlit Secrets.")
     st.info("To test locally, you can provide the API key below:")
-    groq_api_key = st.sidebar.text_input("Enter Groq API Key", type="password")
+    openai_api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
 
 # 4. Define Response Structure using Pydantic
 class DevOpsAnalysis(BaseModel):
@@ -35,12 +35,7 @@ class DevOpsAnalysis(BaseModel):
 # 5. Core Processing Function
 def analyze_devops_logs(log_data):
     try:
-        # Using Llama-3-8b via Groq (Free & Ultra Fast)
-        llm = ChatGroq(
-            model="llama3-8b-8192", 
-            temperature=0.1, 
-            groq_api_key=groq_api_key
-        )
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, openai_api_key=openai_api_key)
         
         parser = JsonOutputParser(pydantic_object=DevOpsAnalysis)
         
@@ -80,8 +75,8 @@ with col2:
     st.markdown("### 🔍 AI Copilot Diagnosis")
     
     if analyze_btn:
-        if not groq_api_key:
-            st.error("Missing Groq API Key! Please supply a key to run analysis.")
+        if not openai_api_key:
+            st.error("Missing OpenAI API Key! Please supply a key to run analysis.")
         elif not log_input.strip():
             st.warning("Please paste some log data first.")
         else:
@@ -109,4 +104,3 @@ with col2:
                     st.markdown("#### **Suggested Execution Commands**")
                     for cmd in result.get('suggested_commands', []):
                         st.code(cmd, language="bash")
-    
