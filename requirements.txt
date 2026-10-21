@@ -1,5 +1,6 @@
 streamlit
-langchain-openai
+langchain-groq
 langchain-core
 pydantic
+
 
