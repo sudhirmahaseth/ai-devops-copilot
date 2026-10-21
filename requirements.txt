@@ -1,6 +1,11 @@
 streamlit
-langchain-groq
+fastapi
+uvicorn
+langchain
+langchain-openai
 langchain-core
+openai
 pydantic
+
 
 
